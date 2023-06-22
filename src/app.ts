@@ -95,7 +95,7 @@ app.post("/api/ipfs/", cors(), upload.single("uploaded_file"), async function (r
 
 // dbConnect().then(() => console.log("Conexion DB Ready"));
 
-// AppDataSource.initialize().then(() => console.log("Conexion ORM Ready"));
+AppDataSource.initialize().then(() => console.log("Conexion ORM Ready"));
 
 let server;
 
