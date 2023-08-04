@@ -14,8 +14,19 @@ import swaggerUi, { serve } from "swagger-ui-express";
 import swaggerSetup from "./config/swagger";
 import multer from "multer";
 
-const pinataSDK = require("@pinata/sdk");
-const pinata = new pinataSDK(process.env.PINATA_KEY, process.env.PINATA_SECRET);
+// Import the NFTStorage class and File constructor from the 'nft.storage' package
+import { NFTStorage, File } from "nft.storage";
+import mime from "mime";
+// import path from "path";
+// import * as glob from "glob";
+// import AdminJS from "adminjs";
+// import AdminJSExpress from "@adminjs/express";
+// import * as AdminJSTypeorm from "@adminjs/typeorm";
+
+// AdminJS.registerAdapter({
+//   Resource: AdminJSTypeorm.Resource,
+//   Database: AdminJSTypeorm.Database,
+// });
 
 const PORT = Number(process.env.PORT) || 3000;
 const app = express();
@@ -53,39 +64,75 @@ const storage = multer.diskStorage({
   },
 });
 
+const NFT_STORAGE_KEY = process.env.NFT_STORAGE_KEY;
+async function storeNFT(imagePath: string, name: string, description: string) {
+  // load the file from disk
+  const image = await fileFromPath(imagePath);
+
+  // create a new NFTStorage client using our API key
+  const nftstorage = new NFTStorage({ token: NFT_STORAGE_KEY as string });
+
+  console.log(image);
+
+  // call client.store, passing in the image & metadata
+  return nftstorage.store({
+    image,
+    name,
+    description,
+  });
+}
+
+function getFileName(filePath: string): string {
+  return filePath.split("/").pop() || "file";
+}
+
+function getFileType(filePath: string): string {
+  // Implementa lógica para obtener el tipo MIME basado en la extensión del archivo.
+  // Aquí solo se muestran ejemplos para imágenes, audios y videos comunes.
+
+  const ext = filePath.split(".").pop()?.toLowerCase() || "";
+  switch (ext) {
+    case "jpg":
+    case "jpeg":
+      return "image/jpeg";
+    case "png":
+      return "image/png";
+    case "gif":
+      return "image/gif";
+    case "mp3":
+      return "audio/mpeg";
+    case "wav":
+      return "audio/wav";
+    case "mp4":
+      return "video/mp4";
+    case "avi":
+      return "video/x-msvideo";
+    default:
+      return "application/octet-stream";
+  }
+}
+
+async function fileFromPath(filePath: string) {
+  const fileData = await fs.promises.readFile(filePath);
+  console.log(fileData);
+  const fileName = getFileName(filePath);
+  const fileType = getFileType(filePath);
+
+  return new File([fileData], fileName, { type: fileType });
+}
+
 const upload = multer({ storage: storage });
 app.post("/api/ipfs/", cors(), upload.single("uploaded_file"), async function (req: any, res: any) {
   try {
     if (req.file) {
-      const readableStreamForFile = fs.createReadStream(__dirname + "/uploads/" + req.file.filename);
-      // console.log(readableStreamForFile);
-      const options = {
-        pinataMetadata: {
-          name: req.file.filename,
-          keyvalues: {
-            customKey: "customValue",
-            customKey2: "customValue2",
-          },
-        },
-        pinataOptions: {
-          cidVersion: 0,
-        },
-      };
-
-      pinata
-        .pinFileToIPFS(readableStreamForFile, options)
-        .then((result: any) => {
-          const path = __dirname + "/uploads/" + req.file.filename;
-          if (fs.existsSync(path)) {
-            fs.unlinkSync(path);
-          }
-          console.log(result);
-          res.json(result);
-        })
-        .catch((err: any) => {
-          console.log(err);
-          res.status(400).send();
-        });
+      const imagePath = __dirname + "/uploads/" + req.file.filename;
+      const result = await storeNFT(imagePath, req.file.filename, req.file.filename);
+      const path = __dirname + "/uploads/" + req.file.filename;
+      if (fs.existsSync(path)) {
+        fs.unlinkSync(path);
+      }
+      console.log(result);
+      res.json(result);
     }
   } catch (error) {
     console.log(error);
@@ -95,7 +142,58 @@ app.post("/api/ipfs/", cors(), upload.single("uploaded_file"), async function (r
 
 // dbConnect().then(() => console.log("Conexion DB Ready"));
 
-AppDataSource.initialize().then(() => console.log("Conexion ORM Ready"));
+AppDataSource.initialize().then(() => {
+  // const entityFiles = glob.sync(path.join(__dirname, "/entities/", "*.entity.{ts,js}"));
+
+  // const entities = entityFiles.map((file: any) => {
+  //   const entityModule = require(file);
+  //   const entity = Object.values(entityModule)[0];
+  //   return entity;
+  // });
+
+  // const adminOptions = {
+  //   resources: entities,
+  //   branding: {
+  //     companyName: "Admin W3Music",
+  //     softwareBrothers: false,
+  //     // logo: false, // OR false to hide the default one
+  //   },
+  // };
+
+  // const admin = new AdminJS(adminOptions);
+
+  // const DEFAULT_ADMIN = {
+  //   email: process.env.EMAIL_ADMINJS,
+  //   password: process.env.PASSWORD_ADMINJS,
+  // };
+
+  // const secret = process.env.SECRET_ADMINJS;
+
+  // const authenticate = async (email: string, password: string) => {
+  //   console.log(email, password);
+  //   if (email === DEFAULT_ADMIN.email && password === DEFAULT_ADMIN.password) {
+  //     return { email: DEFAULT_ADMIN.email };
+  //   }
+  // };
+
+  // const adminRouter = AdminJSExpress.buildAuthenticatedRouter(
+  //   admin,
+  //   {
+  //     authenticate,
+  //     cookiePassword: "very_secret_secret",
+  //   },
+  //   null,
+  //   {
+  //     resave: true,
+  //     saveUninitialized: true,
+  //     secret,
+  //   }
+  // );
+
+  // app.use(admin.options.rootPath, adminRouter);
+  // console.log(admin.options.rootPath, adminRouter);
+  console.log("Conexion ORM Ready");
+});
 
 let server;
 

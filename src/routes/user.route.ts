@@ -33,4 +33,14 @@ const router = Router();
  */
 router.post("/create-user/", userController.createUser);
 
+router.post("/get-user-by-wallet/", userController.getUserByWallet);
+
+router.post("/create-like-track/", userController.createLikeTrack);
+
+router.post("/delete-like-track/", userController.deleteLikeTrack);
+
+router.post("/delete-like-track-id/", userController.deleteLikeTrackById);
+
+router.post("/get-all-like-track/", userController.getAllLikeTrack);
+
 export { router };

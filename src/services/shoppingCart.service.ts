@@ -1,11 +1,18 @@
 import { ShoppingCartEntity } from "../entities/shoppingCart.entity";
+import userService from "./user.service";
 import ApolloQuerys from "../helpers/apolloQuerys";
 
 const createShoppingCart = async (wallet: string, tokenId: string) => {
   try {
+    const user = await userService.getUserByWallet(wallet);
+    if (!user) throw new Error(`User does not exists.`);
+
+    const existCart = await getShoppingCart(wallet, tokenId);
+    if (existCart) throw new Error(`Shopping Cart exists.`);;
+
     const shoppingCart = new ShoppingCartEntity();
 
-    shoppingCart.wallet = wallet;
+    shoppingCart.user = user;
     shoppingCart.tokenId = tokenId;
 
     const shoppingCartSaved = await shoppingCart.save();
@@ -25,21 +32,14 @@ const deleteShoppingCartById = async (wallet: string, id: string) => {
   }
 };
 
+const getShoppingCart = async (wallet: string, tokenId: string) => {
+  return await ShoppingCartEntity.findOneBy({ user: { wallet }, tokenId });
+};
+
 const getAllShoppingCartByWallet = async (wallet: string) => {
   try {
-    const shoppingCarts = await ShoppingCartEntity.findBy({ wallet });
+    const shoppingCarts = await ShoppingCartEntity.findBy({ user: {wallet} });
     const nfts = await ApolloQuerys.getNftByTokenIds(shoppingCarts.map((shoppingCart) => shoppingCart.tokenId));
-
-    // const dataNfts = shoppingCarts.map((shoppingCart) => {
-    //   return nfts.find((nft: any) => {
-    //     if (nft.id === shoppingCart.tokenId) {
-    //       return {
-    //         ...nft,
-    //         ...shoppingCart,
-    //       };
-    //     }
-    //   });
-    // });
 
     const dataNfts = shoppingCarts
       .map((shoppingCart) => {
@@ -60,4 +60,4 @@ const getAllShoppingCartByWallet = async (wallet: string) => {
   }
 };
 
-export default { createShoppingCart, deleteShoppingCartById, getAllShoppingCartByWallet };
+export default { createShoppingCart, deleteShoppingCartById, getAllShoppingCartByWallet, getShoppingCart };

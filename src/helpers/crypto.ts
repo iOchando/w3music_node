@@ -25,7 +25,7 @@ const decrypt = (encryption: string) => {
       .privateDecrypt(
         {
           key: process.env.PRIVATE_KEY as string,
-          passphrase: process.env.PASSWORD_DB,
+          passphrase: process.env.PASSWORD_CRYPTO,
           padding: crypto.constants.RSA_PKCS1_OAEP_PADDING,
         },
         cipheredBytes
@@ -54,4 +54,4 @@ const encrypt = (text: string) => {
   }
 };
 
-export { decrypt, encrypt };
+export default { decrypt, encrypt };

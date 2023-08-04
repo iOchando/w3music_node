@@ -1,8 +1,8 @@
-import { Entity, Column, PrimaryGeneratedColumn, BaseEntity, CreateDateColumn, UpdateDateColumn, ManyToOne } from "typeorm";
+import { Entity, Column, PrimaryGeneratedColumn, BaseEntity, ManyToOne } from "typeorm";
 import { UserEntity } from "./user.entity";
 
-@Entity({ name: "shopping_cart" })
-export class ShoppingCartEntity extends BaseEntity {
+@Entity({ name: "likes_track" })
+export class LikeTrackEntity extends BaseEntity {
   @PrimaryGeneratedColumn("uuid")
   id!: string;
 
