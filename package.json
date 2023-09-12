@@ -17,11 +17,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@adminjs/express": "^4.0.0",
-    "@adminjs/typeorm": "^3.0.0",
     "@apollo/client": "^3.7.16",
     "@pinata/sdk": "^2.1.0",
-    "adminjs": "^5.0.0",
     "apollo-cache-inmemory": "^1.6.6",
     "apollo-link-http": "^1.5.17",
     "axios": "^1.3.2",

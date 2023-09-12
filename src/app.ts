@@ -16,17 +16,6 @@ import multer from "multer";
 
 // Import the NFTStorage class and File constructor from the 'nft.storage' package
 import { NFTStorage, File } from "nft.storage";
-import mime from "mime";
-// import path from "path";
-// import * as glob from "glob";
-// import AdminJS from "adminjs";
-// import AdminJSExpress from "@adminjs/express";
-// import * as AdminJSTypeorm from "@adminjs/typeorm";
-
-// AdminJS.registerAdapter({
-//   Resource: AdminJSTypeorm.Resource,
-//   Database: AdminJSTypeorm.Database,
-// });
 
 const PORT = Number(process.env.PORT) || 3000;
 const app = express();
@@ -143,55 +132,6 @@ app.post("/api/ipfs/", cors(), upload.single("uploaded_file"), async function (r
 // dbConnect().then(() => console.log("Conexion DB Ready"));
 
 AppDataSource.initialize().then(() => {
-  // const entityFiles = glob.sync(path.join(__dirname, "/entities/", "*.entity.{ts,js}"));
-
-  // const entities = entityFiles.map((file: any) => {
-  //   const entityModule = require(file);
-  //   const entity = Object.values(entityModule)[0];
-  //   return entity;
-  // });
-
-  // const adminOptions = {
-  //   resources: entities,
-  //   branding: {
-  //     companyName: "Admin W3Music",
-  //     softwareBrothers: false,
-  //     // logo: false, // OR false to hide the default one
-  //   },
-  // };
-
-  // const admin = new AdminJS(adminOptions);
-
-  // const DEFAULT_ADMIN = {
-  //   email: process.env.EMAIL_ADMINJS,
-  //   password: process.env.PASSWORD_ADMINJS,
-  // };
-
-  // const secret = process.env.SECRET_ADMINJS;
-
-  // const authenticate = async (email: string, password: string) => {
-  //   console.log(email, password);
-  //   if (email === DEFAULT_ADMIN.email && password === DEFAULT_ADMIN.password) {
-  //     return { email: DEFAULT_ADMIN.email };
-  //   }
-  // };
-
-  // const adminRouter = AdminJSExpress.buildAuthenticatedRouter(
-  //   admin,
-  //   {
-  //     authenticate,
-  //     cookiePassword: "very_secret_secret",
-  //   },
-  //   null,
-  //   {
-  //     resave: true,
-  //     saveUninitialized: true,
-  //     secret,
-  //   }
-  // );
-
-  // app.use(admin.options.rootPath, adminRouter);
-  // console.log(admin.options.rootPath, adminRouter);
   console.log("Conexion ORM Ready");
 });
 

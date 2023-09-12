@@ -2,7 +2,7 @@ import { TrackEntity } from "../entities/track.entity";
 
 const createTrack = async (tokenId: string, creatorId: string, like?: boolean, play?: boolean) => {
   try {
-    console.log(like, play)
+    console.log(like, play);
     const track = new TrackEntity();
 
     track.creatorId = creatorId;
@@ -28,6 +28,26 @@ const getTrack = async (tokenId: string) => {
   return await TrackEntity.findOneBy({ tokenId });
 };
 
+const getTracksMostPlays = async () => {
+  return await TrackEntity.find({
+    order: {
+      plays: {
+        direction: "DESC",
+      },
+    },
+  });
+};
+
+const getTracksMostLikes = async () => {
+  return await TrackEntity.find({
+    order: {
+      likes: {
+        direction: "DESC",
+      },
+    },
+  });
+};
+
 const updateTrack = async (tokenId: string, body: any) => {
   const result = await TrackEntity.update({ tokenId: tokenId }, body);
 
@@ -41,7 +61,7 @@ const playTrack = async (wallet: string, tokenId: string, creatorId: string) => 
     const track = await getTrack(tokenId);
     if (track) {
       if (track.creatorId !== wallet) {
-        await updateTrack(tokenId, {plays: track.plays + 1});
+        await updateTrack(tokenId, { plays: track.plays + 1 });
       }
       return track;
     } else {
@@ -56,4 +76,8 @@ const playTrack = async (wallet: string, tokenId: string, creatorId: string) => 
   }
 };
 
-export default { createTrack, getTrack, updateTrack, playTrack };
+const getTracksByCreator = async (wallet: string) => {
+  return await TrackEntity.find({ where: { creatorId: wallet } });
+};
+
+export default { createTrack, getTrack, updateTrack, playTrack, getTracksByCreator, getTracksMostPlays, getTracksMostLikes };
