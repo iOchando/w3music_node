@@ -138,14 +138,10 @@ AppDataSource.initialize().then(() => {
 let server;
 
 if (process.env.NODE_ENV === "production") {
-  const privateKey = fs.readFileSync("/etc/letsencrypt/live/defix3.com/privkey.pem", "utf8");
-  const certificate = fs.readFileSync("/etc/letsencrypt/live/defix3.com/cert.pem", "utf8");
-  const ca = fs.readFileSync("/etc/letsencrypt/live/defix3.com/chain.pem", "utf8");
-
   const credentials = {
-    key: privateKey,
-    cert: certificate,
-    ca: ca,
+    key: fs.readFileSync("/etc/letsencrypt/live/globaldv.tech/privkey.pem", "utf8"),
+    cert: fs.readFileSync("/etc/letsencrypt/live/globaldv.tech/cert.pem", "utf8"),
+    ca: fs.readFileSync("/etc/letsencrypt/live/globaldv.tech/chain.pem", "utf8"),
   };
   server = https.createServer(credentials, app);
 } else {

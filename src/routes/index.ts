@@ -5,7 +5,12 @@ const PATH_ROUTER = `${__dirname}`;
 const router = Router();
 
 const cleanFileName = (fileName: string) => {
-  const file = fileName.split(".ts").shift();
+  let file;
+  if (fileName.includes(".ts")) {
+    file = fileName.split(".ts").shift();
+  } else {
+    file = fileName.split(".js").shift();
+  }
   return file;
 };
 
